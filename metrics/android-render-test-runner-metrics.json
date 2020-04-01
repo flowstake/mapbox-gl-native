@@ -13,9 +13,9 @@
     "metric_path": "android-render-test-runner",
     "probes": [
         "probeGFX",
+        "probeTTRC",
         "probeMemory",
-        "probeNetwork",
-        "probeTTRC"
+        "probeNetwork"
     ],
     "result_path": "/sdcard"
 }
