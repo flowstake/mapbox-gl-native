@@ -66,4 +66,7 @@ extern const std::string panGestureOp;
 extern const std::string gfxProbeOp;
 extern const std::string gfxProbeStartOp;
 extern const std::string gfxProbeEndOp;
+extern const std::string ttrcProbeOp;
+extern const std::string ttrcProbeStartOp;
+extern const std::string ttrcProbeEndOp;
 } // namespace TestOperationNames

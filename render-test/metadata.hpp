@@ -120,14 +120,28 @@ struct GfxProbe {
     Memory memTextures;
 };
 
+// Time to render completion
+struct TtrcProbe {
+    TtrcProbe() = default;
+    TtrcProbe(float ttrc_) : ttrc(ttrc_) {}
+
+    mbgl::TimePoint renderStart;
+    mbgl::TimePoint renderCompleted;
+    float ttrc = 0.0;
+    float tolerance = 0.1f;
+};
+
 class TestMetrics {
 public:
-    bool isEmpty() const { return fileSize.empty() && memory.empty() && network.empty() && fps.empty() && gfx.empty(); }
+    bool isEmpty() const {
+        return fileSize.empty() && memory.empty() && network.empty() && fps.empty() && gfx.empty() && ttrc.empty();
+    }
     std::map<std::string, FileSizeProbe> fileSize;
     std::map<std::string, MemoryProbe> memory;
     std::map<std::string, NetworkProbe> network;
     std::map<std::string, FpsProbe> fps;
     std::map<std::string, GfxProbe> gfx;
+    std::map<std::string, TtrcProbe> ttrc;
 };
 
 struct TestMetadata {
@@ -180,7 +194,6 @@ struct TestMetadata {
 
     std::string errorMessage;
     double difference = 0.0;
-
 };
 
 class TestContext {
@@ -194,6 +207,9 @@ public:
     GfxProbe activeGfxProbe{};
     GfxProbe baselineGfxProbe{};
     bool gfxProbeActive = false;
+
+    TtrcProbe ttrcProbe{};
+    bool ttrcProbeActive = false;
 
 protected:
     virtual ~TestContext() = default;

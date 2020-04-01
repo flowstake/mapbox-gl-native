@@ -12,6 +12,7 @@
     "probes": [
         "probeGFX",
         "probeMemory",
-        "probeNetwork"
+        "probeNetwork",
+        "probeTTRC"
     ]
 }

@@ -14,7 +14,8 @@
     "probes": [
         "probeGFX",
         "probeMemory",
-        "probeNetwork"
+        "probeNetwork",
+        "probeTTRC"
     ],
     "result_path": "/sdcard"
 }

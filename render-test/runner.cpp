@@ -15,6 +15,7 @@
 #include <mbgl/util/run_loop.hpp>
 #include <mbgl/util/string.hpp>
 #include <mbgl/util/tile_cover.hpp>
+#include <mbgl/util/timer.hpp>
 
 #include <mapbox/pixelmatch.hpp>
 
@@ -523,12 +524,35 @@ void TestRunner::checkProbingResults(TestMetadata& resultMetadata) {
             metadata.errorMessage += metadata.errorMessage.empty() ? ss.str() : "\n" + ss.str();
         }
     };
+    // Check TTRC metrics
+    auto checkTtrc = [](TestMetadata& metadata) {
+        if (metadata.metrics.ttrc.empty()) return;
+#if !defined(SANITIZE)
+        for (const auto& expected : metadata.expectedMetrics.ttrc) {
+            auto actual = metadata.metrics.ttrc.find(expected.first);
+            if (actual == metadata.metrics.ttrc.end()) {
+                metadata.errorMessage = "Failed to find TTRC probe: " + expected.first;
+                metadata.metricsErrored++;
+                return;
+            }
+            std::stringstream ss;
+            auto result = checkValue(expected.second.ttrc, actual->second.ttrc, expected.second.tolerance);
+            if (!std::get<bool>(result)) {
+                ss << "Time to render completion (TTRC) at probe \"" << expected.first << "\" is "
+                   << actual->second.ttrc << ", expected is " << expected.second.ttrc << ". ";
+                metadata.metricsFailed++;
+            }
+            metadata.errorMessage += metadata.errorMessage.empty() ? ss.str() : "\n" + ss.str();
+        }
+#endif // !defined(SANITIZE)
+    };
 
     checkFileSize(resultMetadata);
     checkMemory(resultMetadata);
     checkNetwork(resultMetadata);
     checkFps(resultMetadata);
     checkGfx(resultMetadata);
+    checkTtrc(resultMetadata);
 
     if (resultMetadata.ignoredTest) {
         return;
@@ -586,6 +610,15 @@ TestOperations getBeforeOperations(const Manifest& manifest) {
             });
             continue;
         }
+
+        if (ttrcProbeOp == probe) {
+            result.emplace_back([](TestContext& ctx) {
+                assert(!ctx.ttrcProbeActive);
+                ctx.ttrcProbeActive = true;
+                return true;
+            });
+            continue;
+        }
         result.emplace_back(unsupportedOperation(probe));
     }
     return result;
@@ -634,6 +667,14 @@ TestOperations getAfterOperations(const Manifest& manifest) {
                     std::forward_as_tuple(networkProbeOp + mark),
                     std::forward_as_tuple(ProxyFileSource::getRequestCount(), ProxyFileSource::getTransferredSize()));
                 ProxyFileSource::setTrackingActive(false);
+                return true;
+            });
+            continue;
+        }
+        if (ttrcProbeOp == probe) {
+            result.emplace_back([](TestContext& ctx) {
+                assert(ctx.ttrcProbeActive);
+                ctx.ttrcProbeActive = false;
                 return true;
             });
             continue;

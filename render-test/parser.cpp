@@ -285,6 +285,21 @@ std::string serializeMetrics(const TestMetrics& metrics) {
         // End gfx section
     }
 
+    if (!metrics.ttrc.empty()) {
+        // Start TTRC section
+        writer.Key("ttrc");
+        writer.StartArray();
+        for (const auto& ttrcProbe : metrics.ttrc) {
+            assert(!ttrcProbe.first.empty());
+            writer.StartArray();
+            writer.String(ttrcProbe.first.c_str());
+            writer.Double(ttrcProbe.second.ttrc);
+            writer.EndArray();
+        }
+        writer.EndArray();
+        // End TTRC section
+    }
+
     writer.EndObject();
 
     return s.GetString();
@@ -437,6 +452,20 @@ TestMetrics readExpectedMetrics(const mbgl::filesystem::path& path) {
             probe.memVertexBuffers.peak = probeValue[7].GetArray()[1].GetInt();
 
             result.gfx.insert({mark, std::move(probe)});
+        }
+    }
+
+    if (document.HasMember("ttrc")) {
+        const mbgl::JSValue& ttrcValue = document["ttrc"];
+        assert(ttrcValue.IsArray());
+        for (auto& probeValue : ttrcValue.GetArray()) {
+            assert(probeValue.IsArray());
+            assert(probeValue.Size() >= 2u);
+            assert(probeValue[0].IsString());
+            assert(probeValue[1].IsNumber()); // TTRC
+            const std::string mark{probeValue[0].GetString(), probeValue[0].GetStringLength()};
+            assert(!mark.empty());
+            result.ttrc.insert({std::move(mark), {probeValue[1].GetFloat()}});
         }
     }
 
@@ -630,6 +659,10 @@ const std::string panGestureOp("panGesture");
 const std::string gfxProbeOp("probeGFX");
 const std::string gfxProbeStartOp("probeGFXStart");
 const std::string gfxProbeEndOp("probeGFXEnd");
+
+const std::string ttrcProbeOp("probeTTRC");
+const std::string ttrcProbeStartOp("probeTTRCStart");
+const std::string ttrcProbeEndOp("probeTTRCEnd");
 } // namespace TestOperationNames
 
 using namespace TestOperationNames;
@@ -1285,6 +1318,46 @@ TestOperations parseTestOperations(TestMetadata& metadata) {
                 metricProbe.memVertexBuffers.peak -= ctx.baselineGfxProbe.memVertexBuffers.peak;
                 metricProbe.memTextures.peak -= ctx.baselineGfxProbe.memTextures.peak;
                 ctx.getMetadata().metrics.gfx.insert({mark, metricProbe});
+                return true;
+            });
+        } else if (operationArray[0].GetString() == ttrcProbeStartOp) {
+            // probeTTRCStart
+            result.emplace_back([](TestContext& ctx) {
+                assert(!ctx.ttrcProbeActive);
+                ctx.ttrcProbeActive = true;
+                ctx.ttrcProbe.renderStart = {};
+                ctx.ttrcProbe.renderCompleted = {};
+                return true;
+            });
+        } else if (operationArray[0].GetString() == ttrcProbeEndOp) {
+            // probeTTRCEnd
+            result.emplace_back([](TestContext& ctx) {
+                assert(ctx.ttrcProbeActive);
+                ctx.ttrcProbeActive = false;
+                return true;
+            });
+        } else if (operationArray[0].GetString() == ttrcProbeOp) {
+            // probeTTRC
+            assert(operationArray.Size() >= 2u);
+            assert(operationArray[1].IsString());
+
+            std::string mark = std::string(operationArray[1].GetString(), operationArray[1].GetStringLength());
+            result.emplace_back([mark](TestContext& ctx) {
+                auto& frontend = ctx.getFrontend();
+                // Render the map and measure the time
+                try {
+                    ctx.ttrcProbe.renderStart = mbgl::Clock::now();
+                    auto res = frontend.render(ctx.getMap());
+                    ctx.ttrcProbe.renderCompleted = mbgl::Clock::now();
+                } catch (const std::exception&) {
+                    return false;
+                }
+                assert(ctx.ttrcProbeActive);
+                ctx.ttrcProbe.renderCompleted = mbgl::Clock::now();
+                auto totalTime = std::chrono::duration_cast<mbgl::Milliseconds>(ctx.ttrcProbe.renderCompleted -
+                                                                                ctx.ttrcProbe.renderStart);
+                ctx.getMetadata().metrics.ttrc.emplace(
+                    std::piecewise_construct, std::forward_as_tuple(mark), std::forward_as_tuple(totalTime.count()));
                 return true;
             });
         } else {
