@@ -50,7 +50,7 @@ void android_main(struct android_app* app) {
             return result;
         };
 
-        auto result = runTestWithManifest("/metrics/android-render-test-runner-metrics.json");
+        auto result = runTestWithManifest("/metrics/android-render-test-runner-metrics-ttrc.json");
         result = runTestWithManifest("/metrics/android-render-test-runner-style.json") && result;
         mbgl::Log::Info(mbgl::Event::General, "All tests are finished!");
         changeState(env, app, result);

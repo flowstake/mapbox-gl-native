@@ -686,7 +686,7 @@ jobs:
           steps:
             - metrics:
                 step_name: 'Metrics'
-                metrics_params: '-u rebaseline -p metrics/$CIRCLE_JOB-metrics.json'
+                metrics_params: '-u rebaseline -p metrics/$CIRCLE_JOB-metrics-ttrc.json'
       - when:
           condition: << parameters.upload_coverage >>
           steps:

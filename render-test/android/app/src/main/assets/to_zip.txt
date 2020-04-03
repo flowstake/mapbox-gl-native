@@ -5,6 +5,8 @@ metrics/ignores/
 metrics/tests/
 metrics/android-render-test-runner/
 metrics/android-render-test-runner-metrics.json
+metrics/android-render-test-runner-metrics-ttrc.json
 metrics/android-render-test-runner-style.json
 metrics/cache-metrics.db
 metrics/cache-style.db
+metrics/barcelona.db
