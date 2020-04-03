@@ -4,11 +4,12 @@
       "test": {
         "width": 512,
         "height": 512,
+        "mapMode": "static",
         "operations": [
-          ["setStyle", "local://styles/uruguay.json"],
-          ["setZoom", 9 ],
+          ["setStyle", "mapbox://styles/mapbox/streets-v11"],
+          ["setZoom", 13 ],
           ["probeTTRCStart"],
-          ["setCenter", [-56.509552, -32.865788] ],
+          ["setCenter", [2.172350, 41.383700] ],
           ["probeTTRC", "TTRC"],
           ["probeTTRCEnd"]
         ]
@@ -16,5 +17,4 @@
     },
     "sources": {},
     "layers": []
-  }
-  
+}

@@ -1,0 +1,18 @@
+{
+    "base_test_path": "tests/probes/ttrc",
+    "cache_path": "barcelona.db",
+    "expectation_paths": [
+        "expectations/platform-all",
+        "expectations/platform-android"
+    ],
+    "ignore_paths": [
+        "ignores/platform-all.json",
+        "ignores/platform-linux.json",
+        "ignores/platform-android.json"
+    ],
+    "metric_path": "android-render-test-runner/probes/ttrc",
+    "probes": [
+        "probeTTRC"
+    ],
+    "result_path": "/sdcard"
+}

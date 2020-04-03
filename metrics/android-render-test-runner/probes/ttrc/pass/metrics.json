@@ -1,53 +1,8 @@
 {
-    "memory": [
-        [
-            "probeMemory - default - end",
-            2767469,
-            18943
-        ],
-        [
-            "probeMemory - default - start",
-            32,
-            1
-        ]
-    ],
-    "network": [
-        [
-            "probeNetwork - default - end",
-            9,
-            284875
-        ],
-        [
-            "probeNetwork - default - start",
-            0,
-            0
-        ]
-    ],
-    "gfx": [
-        [
-            "probeGFX - default - end",
-            36,
-            13,
-            63,
-            1,
-            [
-                240136,
-                240136
-            ],
-            [
-                68598,
-                68598
-            ],
-            [
-                79296,
-                79296
-            ]
-        ]
-    ],
     "ttrc": [
         [
             "TTRC",
-            33.0
+            100.0
         ]
     ]
 }

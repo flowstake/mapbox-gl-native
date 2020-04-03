@@ -1,0 +1,15 @@
+{
+    "base_test_path": "tests/probes/ttrc",
+    "cache_path": "barcelona.db",
+    "expectation_paths": [
+        "expectations/platform-all"
+    ],
+    "ignore_paths": [
+        "ignores/platform-all.json",
+        "ignores/platform-linux.json"
+    ],
+    "metric_path": "linux-gcc8-release/probes/ttrc",
+    "probes": [
+        "probeTTRC"
+    ]
+}
