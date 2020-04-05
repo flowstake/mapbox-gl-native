@@ -63,7 +63,9 @@ workflows:
           metrics: true
           style_tests: true
       - android-render-test-runner
+      - android-benchmark-runner
       - ios-render-test-runner
+      - ios-benchmark-runner
 
   nightly:
     triggers:
