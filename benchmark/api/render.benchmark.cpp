@@ -43,8 +43,8 @@ static void prepare(Map& map, optional<std::string> json = {}) {
 }
 
 static void prepare_bcn(Map& map, optional<std::string> json = {}) {
-    map.getStyle().loadJSON(json ? *json : util::read_file("benchmark/fixtures/api/style_bcn.json"));
-    map.jumpTo(CameraOptions().withCenter(LatLng { 41.379800, 2.176810 }).withZoom(15.0)); // Manhattan
+    map.getStyle().loadJSON(json ? *json : util::read_file("benchmark/fixtures/api/style.json"));
+    map.jumpTo(CameraOptions().withCenter(LatLng { 41.379800, 2.176810 }).withZoom(15.0)); // Barcelona
 
     auto image = decodeImage(util::read_file("benchmark/fixtures/api/default_marker.png"));
     map.getStyle().addImage(std::make_unique<style::Image>("test-icon", std::move(image), 1.0));
