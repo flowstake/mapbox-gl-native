@@ -439,6 +439,7 @@ jobs:
           command: |
             vendor/benchmark/tools/compare.py benchmarks metrics/benchmark/ios/results.json /tmp/tests/benchmark/results.json > /tmp/tests/benchmark/results_comparison.txt
             cat /tmp/tests/benchmark/results_comparison.txt | ansi2html > /tmp/tests/benchmark/results_comparison.html
+            scripts/check_benchmark_results.sh /tmp/tests/benchmark/results_comparison.txt
       - save
   android-benchmark-runner:
     executor: ubuntu-disco
@@ -479,6 +480,7 @@ jobs:
           command: |
             vendor/benchmark/tools/compare.py benchmarks metrics/benchmark/android/results.json /tmp/tests/benchmark/results.json > /tmp/tests/benchmark/results_comparison.txt
             cat /tmp/tests/benchmark/results_comparison.txt | ansi2html > /tmp/tests/benchmark/results_comparison.html
+            scripts/check_benchmark_results.sh /tmp/tests/benchmark/results_comparison.txt
       - save
   android-api-breakage:
     executor: ubuntu-disco
